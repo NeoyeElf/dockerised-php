@@ -4,19 +4,28 @@ services:
     web:
         image: nginx:latest
         ports:
-            - "8080:80"
+            - "8018:80"
         volumes:
             - ./code:/code
             - ./site.conf:/etc/nginx/conf.d/default.conf
+            - /private/var/log/nginx:/var/log/nginx
+            - "phpsocket:/var/run"
         networks:
             - code-network
     php:
         image: php:fpm
         volumes:
             - ./code:/code
+            - ./php-fpm.conf:/usr/local/etc/php-fpm.conf
+            - ./www.conf:/usr/local/etc/php-fpm.d/www.conf
+            - ./zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
+            - "phpsocket:/var/run"
         networks:
             - code-network
 
 networks:
     code-network:
         driver: bridge
+
+volumes:
+    phpsocket:
